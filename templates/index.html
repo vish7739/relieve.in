@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>26AS Parser Tools </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>26AS PARSER TOOLS</h1>
+                        <p>Professional 26AS PDF parsing tool for tax professionals</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div class="header-badge">
+                        <i class="fas fa-shield-alt"></i> Secure Processing
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- File Upload Section -->
+            <section class="upload-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cloud-upload-alt"></i> Upload 26AS PDF File</h2>
+                    <div class="file-counter">
+                        <span id="fileCount">0</span> file selected
+                    </div>
+                </div>
+                <div class="upload-container">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3 class="upload-text">Drag & Drop 26AS PDF Here</h3>
+                        <p class="upload-subtext">
+                            Supports standard 26AS PDF format from TRACES. All processing happens securely on our server.
+                        </p>
+                        <button class="upload-button" id="browseButton">
+                            <i class="fas fa-folder-open"></i> Browse PDF File
+                        </button>
+                        <input type="file" id="fileInput" accept=".pdf">
+                        <p class="upload-subtext" style="margin-top: 1.5rem; font-size: 0.9rem;">
+                            <i class="fas fa-info-circle"></i> Only Part-I & Part-II data will be extracted and converted
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary Cards -->
+            <div class="summary-section">
+                <div class="summary-card">
+                    <div class="card-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value" id="summaryFileCount">0</div>
+                        <div class="card-label">PDF File</div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value" id="summaryTransactionCount">0</div>
+                        <div class="card-label">Transactions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="controls-section">
+                <button class="btn btn-primary" id="parseBtn">
+                    <i class="fas fa-cogs"></i> Parse 26AS PDF
+                </button>
+                <button class="btn btn-secondary" id="resetBtn">
+                    <i class="fas fa-redo"></i> Reset Tool
+                </button>
+                <button class="btn btn-success" id="downloadBtn" disabled>
+                    <i class="fas fa-download"></i> Download Excel File
+                </button>
+                <div class="progress-bar" id="progressBar" style="display: none;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <section class="preview-section">
+                <div class="preview-header">
+                    <h3><i class="fas fa-eye"></i> Preview</h3>
+                    <div class="transaction-counter" id="transactionCounter" style="display: none;">
+                        <i class="fas fa-list-ol"></i>
+                        <span id="counterValue">0</span> Transactions
+                    </div>
+                </div>
+                <div class="preview-tabs">
+                    <button class="preview-tab active" data-tab="pdf">
+                        <i class="fas fa-file-pdf"></i> PDF Preview
+                    </button>
+                    <button class="preview-tab" data-tab="excel">
+                        <i class="fas fa-file-excel"></i> Excel Preview
+                    </button>
+                </div>
+                <div class="preview-container">
+                    <div class="tab-content">
+                        <!-- PDF Preview -->
+                        <div class="tab-pane active" id="pdf-preview">
+                            <div class="preview-info-bar">
+                                <span id="pdfInfo">No PDF loaded. Upload a 26AS PDF to see preview.</span>
+                                <div class="pdf-controls" id="pdfControls" style="display: none;">
+                                    <button id="prevPage"><i class="fas fa-chevron-left"></i> Previous</button>
+                                    <span id="pageInfo">Page 1 of 1</span>
+                                    <button id="nextPage">Next <i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="pdf-preview-container" id="pdfViewer">
+                                <div style="text-align: center; padding: 4rem; color: var(--text-light);">
+                                    <i class="fas fa-file-pdf" style="font-size: 4rem; margin-bottom: 1.5rem; display: block; color: var(--border-blue);"></i>
+                                    <h3 style="margin-bottom: 0.8rem; color: var(--primary-blue);">No PDF to Display</h3>
+                                    <p>Upload a 26AS PDF file to see the preview here</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Excel Preview -->
+                        <div class="tab-pane" id="excel-preview">
+                            <!-- Assessee Information (shown at top) -->
+                            <div class="assessee-info" id="assesseeInfo">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 1rem;">
+                                    <i class="fas fa-user-tie"></i> Assessee Information
+                                </h4>
+                                <div class="assessee-grid" id="assesseeGrid">
+                                    <div class="assessee-item">
+                                        <span class="assessee-label">Name of Assessee:</span>
+                                        <span class="assessee-value" id="assesseeName">Not Available</span>
+                                    </div>
+                                    <div class="assessee-item">
+                                        <span class="assessee-label">Permanent Account Number (PAN):</span>
+                                        <span class="assessee-value" id="assesseePAN">Not Available</span>
+                                    </div>
+                                    <div class="assessee-item">
+                                        <span class="assessee-label">Financial Year:</span>
+                                        <span class="assessee-value" id="assesseeFY">Not Available</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="preview-info-bar">
+                                <span id="excelInfo">No data parsed. Click "Parse 26AS PDF" to extract data.</span>
+                                <span id="excelRowInfo">Showing 0 rows</span>
+                            </div>
+                            <div class="table-wrapper">
+                                <table class="preview-table" id="excelTable">
+                                    <thead>
+                                        <tr id="excelHeader">
+                                            <th>Sr.No</th>
+                                            <th>Name of Deductor</th>
+                                            <th>TAN of Deductor</th>
+                                            <th>Section</th>
+                                            <th>Transaction Date</th>
+                                            <th>Status of Booking*</th>
+                                            <th>Amount Paid / Credited</th>
+                                            <th>Tax Deducted</th>
+                                            <th>TDS Deposited</th>
+                                            <th>Net Amount</th>
+                                            <th>Rate %</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="excelBody">
+                                        <tr>
+                                            <td colspan="11" style="text-align: center; padding: 4rem; color: var(--text-light);">
+                                                <i class="fas fa-file-excel" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                                                <h3 style="margin-bottom: 0.5rem; color: var(--primary-blue);">No Data to Display</h3>
+                                                <p>Parse 26AS PDF to see the extracted Excel data here</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Info Panel -->
+            <section class="info-panel">
+                <div class="info-tabs">
+                    <button class="info-tab active" data-tab="format">26AS Format</button>
+                    <button class="info-tab" data-tab="safety">Data Safety</button>
+                    <button class="info-tab" data-tab="sections">TDS Sections</button>
+                </div>
+                <div class="tab-content-info">
+                    <div class="tab-pane-info active" id="format-tab">
+                        <h3 style="color: var(--primary-blue); margin-bottom: 1.5rem;">Standard 26AS Format Information</h3>
+                        <div class="info-list">
+                            <li>Extracts Part-I and Part-II data from 26AS PDF (TDS Deductions)</li>
+                            <li>Supports standard Indian 26AS format from TRACES portal</li>
+                            <li>Automatically identifies PAN, Financial Year, and Assessee details</li>
+                            <li>Calculates Net Amount and TDS Rate for each transaction</li>
+                            <li>Handles multiple deductor entries and transaction rows</li>
+                            <li>Maintains original 26AS structure in Excel output</li>
+                            <li>Validates data quality and completeness of extraction</li>
+                            <li>Supports all standard TDS sections (194C, 194Q, 194, etc.)</li>
+                        </div>
+                        <div class="disclaimer-box">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Important Notes</h4>
+                            <p>This tool extracts data from 26AS PDFs generated from TRACES. Only Part-I (TDS Deductions) and Part-II (15G/15H) are processed. For complete tax statement analysis, refer to the original 26AS document.</p>
+                        </div>
+                    </div>
+                    <div class="tab-pane-info" id="safety-tab">
+                        <h3 style="color: var(--primary-blue); margin-bottom: 1.5rem;">Data Security & Privacy</h3>
+                        <div class="info-list">
+                            <li>All processing is performed on secure Python backend</li>
+                            <li>Uploaded files are automatically deleted after processing</li>
+                            <li>No personal or financial data is stored permanently</li>
+                            <li>Generated Excel files are available for download only</li>
+                            <li>Built with enterprise-grade security practices for financial data</li>
+                            <li>No third-party sharing of any uploaded data</li>
+                            <li>All data processing complies with Indian tax data regulations</li>
+                        </div>
+                        <div class="disclaimer-box">
+                            <h4><i class="fas fa-shield-alt"></i> Security Disclaimer</h4>
+                            <p>This is a professional tool for converting 26AS PDFs to Excel. While we ensure high accuracy, users should verify the extracted data against the original 26AS document before using it for tax filing or financial reporting.</p>
+                        </div>
+                    </div>
+                    <div class="tab-pane-info" id="sections-tab">
+                        <h3 style="color: var(--primary-blue); margin-bottom: 1.5rem;">Common TDS Sections in 26AS</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                            <div style="background: var(--light-blue); padding: 1rem; border-radius: 6px;">
+                                <h4 style="color: var(--accent-blue); margin-bottom: 0.5rem;">194C</h4>
+                                <p style="color: var(--text-medium); font-size: 0.9rem;">Payments to contractors and sub-contractors (2% TDS)</p>
+                            </div>
+                            <div style="background: var(--light-blue); padding: 1rem; border-radius: 6px;">
+                                <h4 style="color: var(--accent-blue); margin-bottom: 0.5rem;">194Q</h4>
+                                <p style="color: var(--text-medium); font-size: 0.9rem;">Payment of certain sums for purchase of goods (0.1% TDS)</p>
+                            </div>
+                            <div style="background: var(--light-blue); padding: 1rem; border-radius: 6px;">
+                                <h4 style="color: var(--accent-blue); margin-bottom: 0.5rem;">194</h4>
+                                <p style="color: var(--text-medium); font-size: 0.9rem;">Dividends (TDS on dividend income)</p>
+                            </div>
+                            <div style="background: var(--light-blue); padding: 1rem; border-radius: 6px;">
+                                <h4 style="color: var(--accent-blue); margin-bottom: 0.5rem;">194A</h4>
+                                <p style="color: var(--text-medium); font-size: 0.9rem;">Interest other than securities</p>
+                            </div>
+                            <div style="background: var(--light-blue); padding: 1rem; border-radius: 6px;">
+                                <h4 style="color: var(--accent-blue); margin-bottom: 0.5rem;">194I</h4>
+                                <p style="color: var(--text-medium); font-size: 0.9rem;">Rent payments</p>
+                            </div>
+                            <div style="background: var(--light-blue); padding: 1rem; border-radius: 6px;">
+                                <h4 style="color: var(--accent-blue); margin-bottom: 0.5rem;">194J</h4>
+                                <p style="color: var(--text-medium); font-size: 0.9rem;">Fees for professional/technical services</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="copyright">
+                    © <script>document.write(new Date().getFullYear())</script> 26AS PARSER TOOLS.
+                </div>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> Privacy</a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Statistics Container -->
+        <div class="stats-container" id="statsContainer">
+            <div class="stats-header">
+                <i class="fas fa-chart-line"></i>
+                <span>Statistics</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalFilesCounter">0</div>
+                <div class="stat-label">Total Files Processed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="todayFilesCounter">0</div>
+                <div class="stat-label">Files Processed Today</div>
+                <div class="stat-date" id="currentDate"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-download"></i> Download Excel File</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-label">PDF Pages</div>
+                        <div class="summary-value" id="modalPageCount">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Transactions</div>
+                        <div class="summary-value" id="modalTransactionCount">0</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Processing Time</div>
+                        <div class="summary-value" id="modalTime">0s</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">File Size</div>
+                        <div class="summary-value" id="modalFileSize">0 KB</div>
+                    </div>
+                </div>
+                
+                <div class="disclaimer-box">
+                    <h4><i class="fas fa-shield-alt"></i> Data Safety & Disclaimer</h4>
+                    <p>This Excel file was generated from your uploaded 26AS PDF using our secure Python backend. Please verify the extracted data against the original 26AS document before using it for tax filing or financial reporting.</p>
+                </div>
+                
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn btn-success" id="confirmDownload">
+                        <i class="fas fa-download"></i> Download Excel File
+                    </button>
+                    <button class="btn btn-secondary" id="closeModalBtn">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
