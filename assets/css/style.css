@@ -1,20 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 :root {
-            --primary-blue: #2952CC;
-            --secondary-blue: #1E3F99;
+           --primary-blue: #004ea0;
+            --secondary-blue: #2a5298;
+            --accent-blue: #4a7dff;
             --light-bg: #F8F9FC;
             --card-border: #E5E8F0;
             --font-500: 500;
             --color-light-gray: #9da0a9;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+     font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+li{list-style: none;}
+.fw-500{font-weight: var(--font-500) !important;}
+
+.navbar-brand > img {width: 150px;}
+
+        body { 
             color: #1a1a1a;
         }
         p{font-weight: var(--font-500);}
         .navbar-toggler{border: none;}
         .navbar-toggler:focus{box-shadow: none;}
-
+        .cat-link{color: var(--primary-blue); font-weight: 600;}
         /* Navbar */
         .navbar {
             background: white;
@@ -48,10 +62,9 @@
 
         /* Hero Section */
         .hero-section {
-            background: linear-gradient(135deg, #2952CC 0%, #1E3F99 100%);
-            background-image: 
-                radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-                linear-gradient(135deg, #2952CC 0%, #1E3F99 100%);
+            background: linear-gradient(135deg, #1a87c3 0%, #004698 100%);
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px), linear-gradient(135deg, #158ac7 0%, #02499d 100%);
+            background-size: 30px 30px, 100% 100%;
             background-size: 30px 30px, 100% 100%;
             background-position: 0 0, 0 0;
             color: white;
@@ -108,7 +121,10 @@
             font-weight: 700;
             text-align: center;
             margin-bottom: 1rem;
-            color: #1a1a1a;
+             background: linear-gradient(360deg, #1a87c3 0%, #004698 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent !important;
         }
 
         .section-subtitle {
@@ -166,7 +182,7 @@
         }
 
         .btn-use-tool {
-            background: var(--primary-blue);
+          background: linear-gradient(360deg, #1a87c3 0%, #004698 100%);
             color: white;
             border: none;
             padding: 0.65rem 1.5rem;
@@ -178,7 +194,7 @@
         }
 
         .btn-use-tool:hover {
-            background: var(--secondary-blue);
+            /* background: var(--secondary-blue); */
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(41, 82, 204, 0.3);
         }
@@ -278,10 +294,8 @@
 
         /* CTA Section */
         .cta-section {
-            background: linear-gradient(135deg, #2952CC 0%, #1E3F99 100%);
-            background-image: 
-                radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-                linear-gradient(135deg, #2952CC 0%, #1E3F99 100%);
+            background: linear-gradient(135deg, #1a87c3 0%, #004698 100%);
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px), linear-gradient(135deg, #158ac7 0%, #02499d 100%);
             background-size: 30px 30px, 100% 100%;
             background-position: 0 0, 0 0;
             color: white;
@@ -327,11 +341,14 @@
             background: white;
         }
 
-        .about-section h2 {
+        .about-section h2 ,.linkfooter-gradvl {
             font-size: 1.75rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
-            color: #1a1a1a;
+            background: linear-gradient(360deg, #1a87c3 0%, #004698 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent !important;
         }
 
         .about-section p {
